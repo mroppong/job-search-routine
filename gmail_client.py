@@ -26,18 +26,22 @@ def _build_message(company: dict, cover_letter: str) -> str:
     # Cover letter as plain-text body
     msg.attach(MIMEText(cover_letter, "plain", "utf-8"))
 
-    # Attach CV from file
     import os as os_module
-    if os_module.path.exists(config.CV_FILE_PATH):
-        with open(config.CV_FILE_PATH, "rb") as f:
-            cv_bytes = f.read()
-        attachment = MIMEApplication(cv_bytes, _subtype="pdf")
-        attachment.add_header(
-            "Content-Disposition", "attachment", filename="CV_Vincent_Oppong.pdf"
-        )
-        msg.attach(attachment)
-    else:
-        print("   ⚠️  CV_BASE64 env var not set — email sent without CV attachment.")
+
+    attachments = [
+        (config.CV_FILE_PATH,         "CV_Vincent_Oppong.pdf"),
+        (config.CERT_NUMERIQUES_PATH, "Certificats_numériques.pdf"),
+        (config.CERT_TRAVAIL_PATH,    "Certificats_de_travail.pdf"),
+    ]
+    for path, filename in attachments:
+        if os_module.path.exists(path):
+            with open(path, "rb") as f:
+                data = f.read()
+            part = MIMEApplication(data, _subtype="pdf")
+            part.add_header("Content-Disposition", "attachment", filename=filename)
+            msg.attach(part)
+        else:
+            print(f"   ⚠️  Attachment not found, skipping: {path}")
 
     return base64.urlsafe_b64encode(msg.as_bytes()).decode("utf-8")
 

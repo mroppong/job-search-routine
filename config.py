@@ -11,7 +11,9 @@ SERVICE_ACCOUNT_JSON = os.environ.get("SERVICE_ACCOUNT_JSON", "")
 GMAIL_ADDRESS   = os.environ.get("GMAIL_ADDRESS", "mr.oppong@gmail.com")
 SPREADSHEET_ID  = os.environ.get("SPREADSHEET_ID", "")   # paste Sheet ID from Google Drive
 CALENDAR_ID     = os.environ.get("CALENDAR_ID", "primary")
-CV_FILE_PATH    = os.environ.get("CV_FILE_PATH", "/app/CV_Vincent_Oppong.pdf")
+CV_FILE_PATH              = os.environ.get("CV_FILE_PATH", "/app/CV_Vincent_Oppong.pdf")
+CERT_NUMERIQUES_PATH      = os.environ.get("CERT_NUMERIQUES_PATH", "/app/Certificats_numeriques.pdf")
+CERT_TRAVAIL_PATH         = os.environ.get("CERT_TRAVAIL_PATH", "/app/Certificats_de_travail.pdf")
 
 MAX_COMPANIES_PER_DAY = int(os.environ.get("MAX_COMPANIES_PER_DAY", "5"))
 FOLLOW_UP_DAYS        = int(os.environ.get("FOLLOW_UP_DAYS", "14"))
