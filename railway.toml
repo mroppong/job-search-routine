@@ -1,0 +1,7 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+# This command is used for the cron service (see Railway dashboard)
+startCommand = "python main.py"
+restartPolicyType = "never"
