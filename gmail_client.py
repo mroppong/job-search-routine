@@ -26,9 +26,11 @@ def _build_message(company: dict, cover_letter: str) -> str:
     # Cover letter as plain-text body
     msg.attach(MIMEText(cover_letter, "plain", "utf-8"))
 
-    # Attach CV from base64 env variable
-    if config.CV_BASE64:
-        cv_bytes = base64.b64decode(config.CV_BASE64)
+    # Attach CV from file
+    import os as os_module
+    if os_module.path.exists(config.CV_FILE_PATH):
+        with open(config.CV_FILE_PATH, "rb") as f:
+            cv_bytes = f.read()
         attachment = MIMEApplication(cv_bytes, _subtype="pdf")
         attachment.add_header(
             "Content-Disposition", "attachment", filename="CV_Vincent_Oppong.pdf"
