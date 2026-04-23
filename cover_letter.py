@@ -3,10 +3,10 @@ company using Gemini, matching Vincent's strongest relevant experience to
 the company's specific context."""
 
 from datetime import datetime
-import google.generativeai as genai
+from google import genai
 import config
 
-genai.configure(api_key=config.GEMINI_API_KEY)
+_client = genai.Client(api_key=config.GEMINI_API_KEY)
 
 
 def generate_cover_letter(company: dict) -> str:
@@ -65,6 +65,5 @@ Contact : {company.get('contact_name') or 'N/A'} — {company.get('contact_title
 
 Retourne UNIQUEMENT le texte de la lettre, sans commentaires ni balises."""
 
-    model = genai.GenerativeModel(model_name=config.MODEL)
-    response = model.generate_content(prompt)
+    response = _client.models.generate_content(model=config.MODEL, contents=prompt)
     return response.text.strip()

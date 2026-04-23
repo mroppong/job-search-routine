@@ -2,10 +2,11 @@
 companies in the Lausanne / Vaud area that have not yet been contacted."""
 
 import json
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import config
 
-genai.configure(api_key=config.GEMINI_API_KEY)
+_client = genai.Client(api_key=config.GEMINI_API_KEY)
 
 
 def research_companies(already_contacted: list[str]) -> list[dict]:
@@ -58,12 +59,13 @@ Retourne UNIQUEMENT du JSON valide dans ce format exact (pas de texte avant ou a
   ]
 }}"""
 
-    model = genai.GenerativeModel(
-        model_name=config.MODEL,
-        tools="google_search_retrieval",   # Gemini's grounded web search
+    response = _client.models.generate_content(
+        model=config.MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            tools=[types.Tool(google_search=types.GoogleSearch())],
+        ),
     )
-
-    response = model.generate_content(prompt)
     full_text = response.text
 
     # Parse JSON — be tolerant of leading/trailing prose
