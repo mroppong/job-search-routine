@@ -81,14 +81,17 @@ def run():
             gmail_result = gmail_client.create_draft_or_send(company, letter)
             print(f"       ✅  {gmail_result['type'].capitalize()} créé (id: {gmail_result['id'][:12]}…)")
 
-            # 3c — Calendar
-            print("       📅  Création du rappel de relance…")
-            calendar_client.create_followup_event(company)
-
-            # 3d — Sheets
+            # 3c — Sheets (source of truth — must succeed for tracking)
             print("       📊  Mise à jour du tableau de bord…")
             status = "Envoyé" if config.AUTO_SEND else "Brouillon créé"
             sheets_client.add_application(company, gmail_result["id"], follow_up, status)
+
+            # 3d — Calendar (best-effort — failure does not block the row)
+            print("       📅  Création du rappel de relance…")
+            try:
+                calendar_client.create_followup_event(company)
+            except Exception as cal_exc:
+                print(f"       ⚠️   Calendar non bloquant : {cal_exc}")
 
             print("       ✅  Terminé !\n")
             results.append({"company": company["name"], "ok": True})
