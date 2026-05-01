@@ -84,7 +84,7 @@ def run():
             # 3c — Sheets (source of truth — must succeed for tracking)
             print("       📊  Mise à jour du tableau de bord…")
             status = "Envoyé" if config.AUTO_SEND else "Brouillon créé"
-            sheets_client.add_application(company, gmail_result["id"], follow_up, status)
+            sheets_client.add_application(company, gmail_result["thread_id"], follow_up, status)
 
             # 3d — Calendar (best-effort — failure does not block the row)
             print("       📅  Création du rappel de relance…")

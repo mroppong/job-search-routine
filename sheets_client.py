@@ -95,6 +95,53 @@ def add_application(
     ).execute()
 
 
+def get_pending_applications() -> list[dict]:
+    """Return rows with status 'Envoyé' or 'Relancé' as dicts keyed by HEADERS."""
+    service = _build_service()
+    result  = (
+        service.spreadsheets()
+        .values()
+        .get(spreadsheetId=config.SPREADSHEET_ID, range="'Applications'!A:K")
+        .execute()
+    )
+    rows = result.get("values", [])
+    if len(rows) < 2:
+        return []
+    keys = [
+        "date_envoi", "company", "poste", "city", "website",
+        "contact_name", "contact_email", "status", "follow_up_date",
+        "why_good_fit", "message_id",
+    ]
+    pending = []
+    for row in rows[1:]:
+        padded = row + [""] * (len(keys) - len(row))
+        app = dict(zip(keys, padded))
+        if app["status"] in ("Envoyé", "Relancé"):
+            pending.append(app)
+    return pending
+
+
+def update_followup_date(company_name: str, new_date: str):
+    """Scan column B for company_name and update column I (Date relance)."""
+    service = _build_service()
+    result  = (
+        service.spreadsheets()
+        .values()
+        .get(spreadsheetId=config.SPREADSHEET_ID, range="'Applications'!B:B")
+        .execute()
+    )
+    rows = result.get("values", [])
+    for i, row in enumerate(rows, start=1):
+        if row and row[0] == company_name:
+            service.spreadsheets().values().update(
+                spreadsheetId=config.SPREADSHEET_ID,
+                range=f"'Applications'!I{i}",
+                valueInputOption="RAW",
+                body={"values": [[new_date]]},
+            ).execute()
+            return
+
+
 def update_status(company_name: str, new_status: str):
     """Scan column B for company_name and update column H (Statut)."""
     service = _build_service()

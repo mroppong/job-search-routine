@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # ── Google Gemini via Vertex AI ──────────────────────────────────────────────
 def _resolve_gcp_project():

@@ -22,6 +22,7 @@ VERTEX_SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 GMAIL_SCOPES = [
     "https://www.googleapis.com/auth/gmail.compose",
     "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/gmail.readonly",
 ]
 
 # ── Service account (Vertex AI, Sheets, Calendar) ────────────────────────────

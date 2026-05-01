@@ -2,7 +2,6 @@
 company using Gemini, matching Vincent's strongest relevant experience to
 the company's specific context."""
 
-from datetime import datetime
 from google import genai
 import config
 from google_auth import get_vertex_credentials
@@ -16,26 +15,15 @@ client = genai.Client(
 
 
 def generate_cover_letter(company: dict) -> str:
-    """Return a fully formatted French cover letter for the given company."""
+    """Return the body of a French cover letter (no sender header, no date)."""
 
-    today_fr = datetime.now().strftime("%d %B %Y").lstrip("0")  # e.g. "1 mai 2026"
+    salutation = "Bonjour,"
 
-    # Salutation
-    if company.get("contact_name"):
-        salutation = f"Madame, Monsieur {company['contact_name'].split()[-1]},"
-    else:
-        salutation = "Madame, Monsieur,"
-
-    prompt = f"""Rédige une lettre de motivation professionnelle en français pour Vincent Oppong 
-qui postule spontanément chez {company['name']}.
+    prompt = f"""Rédige le corps d'un email de candidature spontanée en français pour Vincent Oppong
+qui postule chez {company['name']}.
 
 === PROFIL DE VINCENT ===
 Nom : Vincent Oppong
-Adresse : Route Aloys-Fauquez 73, 1018 Lausanne
-Téléphone : +41 78 309 11 68
-Email : mr.oppong@gmail.com
-Portfolio : {config.CANDIDATE['portfolio']}
-
 Compétences clés :
 {chr(10).join(f'- {s}' for s in config.CANDIDATE['key_skills'])}
 
@@ -58,18 +46,17 @@ Contact : {company.get('contact_name') or 'N/A'} — {company.get('contact_title
 - Langue : français professionnel et naturel (niveau C1)
 - Ton : professionnel mais chaleureux, direct, pas de formules creuses
 - Longueur : 3-4 paragraphes denses — ni trop court ni trop long
-- Commence par les coordonnées expéditeur puis destinataire (format suisse standard)
-- Date : {today_fr}
-- Salutation : {salutation}
+- C'est un email, donc PAS de bloc d'adresse expéditeur, PAS de date, PAS de bloc destinataire
+- Commence directement par la salutation : {salutation}
 - Paragraph 1 : accroche percutante liée au contexte SPÉCIFIQUE de {company['name']} (pas générique)
 - Paragraph 2 : 1-2 réalisations concrètes et chiffrées les plus pertinentes pour CE secteur
 - Paragraph 3 : valeur ajoutée de sa spécialisation IA + tools modernes pour cette entreprise
 - Paragraph 4 : call-to-action enthousiaste pour un entretien
-- Signature : "Cordialement," puis "Vincent Oppong"
+- Termine par : "Cordialement," puis "Vincent Oppong" (rien d'autre — les coordonnées seront ajoutées automatiquement)
 - NE PAS mentionner qu'il est disponible immédiatement (évite de sembler désespéré)
 - NE PAS copier mot pour mot la lettre de motivation Conforama — même structure mais nouveau contenu
 
-Retourne UNIQUEMENT le texte de la lettre, sans commentaires ni balises."""
+Retourne UNIQUEMENT le texte, sans commentaires ni balises HTML."""
 
     response = client.models.generate_content(model=config.MODEL, contents=prompt)
     return response.text.strip()
