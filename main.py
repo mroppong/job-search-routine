@@ -20,6 +20,7 @@ import research
 import cover_letter as cl
 import gmail_client
 import calendar_client
+import check_responses
 
 
 # ── Validation ───────────────────────────────────────────────────────────────
@@ -45,6 +46,9 @@ def run():
     print(f"{'='*62}\n")
 
     validate_env()
+
+    # Step 0 — Check replies and send follow-ups for existing applications
+    check_responses.run()
 
     # Step 1 — Ensure headers exist & load history
     print("📋  Chargement des candidatures précédentes…")
