@@ -11,7 +11,7 @@ import config
 
 
 def _build_service():
-    return build("gmail", "v1", credentials=google_auth.get_credentials())
+    return build("gmail", "v1", credentials=google_auth.get_gmail_credentials())
 
 
 def _build_message(company: dict, cover_letter: str) -> str:

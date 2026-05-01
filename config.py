@@ -1,8 +1,20 @@
 import os
 
-# ── Google Gemini ─────────────────────────────────────────────────────────────
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-MODEL = "gemini-2.0-flash"          # swap to "gemini-1.5-pro" for higher quality
+# ── Google Gemini via Vertex AI ──────────────────────────────────────────────
+def _resolve_gcp_project():
+    project = os.environ.get("GCP_PROJECT_ID", "")
+    if project:
+        return project
+    sa_path = os.path.join(os.path.dirname(__file__), "service_account.json")
+    if os.path.exists(sa_path):
+        import json as _json
+        with open(sa_path, encoding="utf-8") as f:
+            return _json.load(f).get("project_id", "")
+    return ""
+
+GCP_PROJECT_ID = _resolve_gcp_project()
+GCP_LOCATION   = os.environ.get("GCP_LOCATION", "us-central1")
+MODEL          = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
 # ── Google Service Account (set via Railway env vars after encode_service_account.py) ─
 SERVICE_ACCOUNT_JSON = os.environ.get("SERVICE_ACCOUNT_JSON", "")
@@ -11,9 +23,10 @@ SERVICE_ACCOUNT_JSON = os.environ.get("SERVICE_ACCOUNT_JSON", "")
 GMAIL_ADDRESS   = os.environ.get("GMAIL_ADDRESS", "mr.oppong@gmail.com")
 SPREADSHEET_ID  = os.environ.get("SPREADSHEET_ID", "")   # paste Sheet ID from Google Drive
 CALENDAR_ID     = os.environ.get("CALENDAR_ID", "primary")
-CV_FILE_PATH              = os.environ.get("CV_FILE_PATH", "/app/CV_Vincent_Oppong.pdf")
-CERT_NUMERIQUES_PATH      = os.environ.get("CERT_NUMERIQUES_PATH", "/app/Certificats_numeriques.pdf")
-CERT_TRAVAIL_PATH         = os.environ.get("CERT_TRAVAIL_PATH", "/app/Certificats_de_travail.pdf")
+_HERE = os.path.dirname(os.path.abspath(__file__))
+CV_FILE_PATH         = os.environ.get("CV_FILE_PATH",         os.path.join(_HERE, "CV_Vincent_Oppong.pdf"))
+CERT_NUMERIQUES_PATH = os.environ.get("CERT_NUMERIQUES_PATH", os.path.join(_HERE, "Certificats_numeriques.pdf"))
+CERT_TRAVAIL_PATH    = os.environ.get("CERT_TRAVAIL_PATH",    os.path.join(_HERE, "Certificats_de_travail.pdf"))
 
 MAX_COMPANIES_PER_DAY = int(os.environ.get("MAX_COMPANIES_PER_DAY", "5"))
 FOLLOW_UP_DAYS        = int(os.environ.get("FOLLOW_UP_DAYS", "14"))

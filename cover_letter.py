@@ -5,14 +5,20 @@ the company's specific context."""
 from datetime import datetime
 from google import genai
 import config
+from google_auth import get_vertex_credentials
 
-_client = genai.Client(api_key=config.GEMINI_API_KEY)
+client = genai.Client(
+    vertexai=True,
+    project=config.GCP_PROJECT_ID,
+    location=config.GCP_LOCATION,
+    credentials=get_vertex_credentials(),
+)
 
 
 def generate_cover_letter(company: dict) -> str:
     """Return a fully formatted French cover letter for the given company."""
 
-    today_fr = datetime.now().strftime("%-d %B %Y")  # e.g. "23 avril 2026"
+    today_fr = datetime.now().strftime("%d %B %Y").lstrip("0")  # e.g. "1 mai 2026"
 
     # Salutation
     if company.get("contact_name"):
@@ -65,5 +71,5 @@ Contact : {company.get('contact_name') or 'N/A'} — {company.get('contact_title
 
 Retourne UNIQUEMENT le texte de la lettre, sans commentaires ni balises."""
 
-    response = _client.models.generate_content(model=config.MODEL, contents=prompt)
+    response = client.models.generate_content(model=config.MODEL, contents=prompt)
     return response.text.strip()

@@ -26,8 +26,7 @@ import calendar_client
 
 def validate_env():
     required = [
-        ("GEMINI_API_KEY", config.GEMINI_API_KEY),
-        ("SERVICE_ACCOUNT_JSON", config.SERVICE_ACCOUNT_JSON),
+        ("GCP_PROJECT_ID", config.GCP_PROJECT_ID),
         ("SPREADSHEET_ID", config.SPREADSHEET_ID),
     ]
     missing = [name for name, val in required if not val]
